@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\GeneratePugReportController;
+use App\Http\Controllers\TestApiController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,3 +18,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+Route::get('test-api', [TestApiController::class , 'index']);
+Route::get('test-generate', [GeneratePugReportController::class , 'index']);
+
