@@ -2,86 +2,43 @@
 
 namespace App\Http\Controllers;
 
-use http\Client;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use Pug\Pug;
 
 class GeneratePugReportController extends Controller
 {
     public function index()
     {
-//        $client = new \http\Controllerlient();
-        $data = Http::get('https://test-converter.enad-abuzaid.com/index.json');
+//        $api = Http::get('https://test-converter.enad-abuzaid.com/index.json');
 
-        $pug_array_result = [];
-        $tag_has_child = 0;
-        $counter = 0;
-        $parent_index = 0;
+        // Sample JSON data
+        $jsonData = '{
+            "file_name": "test",
+            "date": "2023-03-16T18:42:18.305190Z",
+            "html": "<div><p>this p for section </p><h4>this h4 child for section parent</h4></div><p>hello this is sample text</p><div><p class=\'test\'>hi with class and child</p></div><p>another paragraph</p><h1> heading 1</h1><h2 id=\'IDTest\'>heading 2</h2><h3>heading 3</h3><span>this is span</span><div>this is div</div><img src=\'test.png\' alt=\'alt tag\'>"
+        }';
 
+        $data = json_decode($jsonData, true);
 
-        $dom = new \DOMDocument();
-        $dom->loadHTML($data['html']);
-        foreach ($dom->getElementsByTagName('*') as $element) {
-            $counter ++;
-            $tag_class = '';
-            $tag_id = '';
+        // Extract HTML code from data
+        $html = $data['html'];
 
 
 
+        $pug = new Pug();
 
 
-            if ($element->hasAttributes()) {
-                foreach ($element->attributes as $attr) {
-                    $att_name = $attr->nodeName;
-                    $att_value = $attr->nodeValue;
 
-                    if ($att_name == 'class'){
-                        $tag_class = $att_value;
-                    }
-
-                    if ($att_name == 'id'){
-                        $tag_id = $att_value;
-                    }
-                }
-            }
-
-            $tag_name = $element->nodeName;
-            $text_tag = $element->textContent;
-            if ($tag_name == 'html' || $tag_name == 'body' || $tag_name == 'head')
-            {
-                $text_tag = '';
-            }
-            $result = [
-                'tag_name' => $tag_name,
-                'text_tag' => $text_tag,
-                'has_class' => $tag_class,
-                'has_id' => $tag_id,
-            ];
+        $pugTemplate = $pug->compile($html);
 
 
-//            if ($tag_has_child > 0 )
-//            {
-//                $parent_index = count($pug_array_result) -1 ;
-//                array_push($pug_array_result[$parent_index] , $result);
-//                $tag_has_child=$tag_has_child-1;
-//
-//            } else {
-//                array_push($pug_array_result , $result);
-//                $tag_has_child = $element->childElementCount;
-//
-//
-//            }
+        $fileName = $data['file_name'] . '.pug';
 
 
 
 
-
-            array_push($pug_array_result , $result);
-
-        }
-
-
-
-        return $pug_array_result;
+        return response($pugTemplate, 200, [
+            'Content-Type' => 'application/octet-stream',
+            'Content-Disposition' => 'attachment; filename="' . $fileName . '"'
+        ]);
     }
 }
