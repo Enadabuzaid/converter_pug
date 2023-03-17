@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Facade;
+use Bkwld\Pug\Pug;
+
 
 return [
 
@@ -194,6 +196,9 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+
+        Bkwld\LaravelPug\ServiceProvider::class,
+
 
     ],
 
